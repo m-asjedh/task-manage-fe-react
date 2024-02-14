@@ -8,6 +8,7 @@ import AdminLogin from "./components/AdminLogin";
 import UserRegister from "./components/UserRegister";
 import UserDash from "./components/UserDash";
 import AdminDash from "./components/AdminDash";
+import AddTask from "./components/AddTask";
 
 const router = createBrowserRouter([
   {
@@ -27,12 +28,16 @@ const router = createBrowserRouter([
         element: <UserRegister />,
       },
       {
-        path: "/user_dashboard",
+        path: "/user-dashboard",
         element: <UserDash />,
       },
       {
-        path: "/admin_dashboard",
+        path: "/admin-dashboard",
         element: <AdminDash />,
+      },
+      {
+        path: "/add-task",
+        element: <AddTask />,
       },
     ],
   },

@@ -15,7 +15,7 @@ const UserLogin = () => {
         email,
         password,
       });
-      navigate("/user_dashboard");
+      navigate("/user-dashboard");
     } catch (error) {
       console.error("Error login:", error);
       alert("Error login. Please try again.");

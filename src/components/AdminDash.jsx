@@ -1,7 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
+import axios from "axios";
 
 const AdminDash = () => {
+  const [users, setUsers] = useState([]);
+
+  const fetchUsers = async () => {
+    const data = await axios.get(
+      `http://localhost:8080/api/v1/taskManager/users`
+    );
+    return data;
+  };
+
+  const deleteUser = async (id) => {
+    const data = await axios.delete(
+      `http://localhost:8080/api/v1/taskManager/deleteUsers/${id}`
+    );
+    return data;
+  };
+  useEffect(() => {
+    async function getData() {
+      await fetchUsers().then((res) => setUsers(res.data));
+    }
+    getData();
+  });
+
+  const handleDeleteUser = async (id) => {
+    await deleteUser(id);
+    window.location.reload();
+  };
+
   return (
     <div>
       <div className="flex justify-center items-center my-10 mx-10">
@@ -17,26 +45,22 @@ const AdminDash = () => {
               <th className="px-4 py-2">Action</th>
             </tr>
           </thead>
-          <tbody>
-            <td className="border px-4 py-2">Mohamed Asjedh</td>
-            <td className="border px-4 py-2">m.asjedhcr7@gmail.com</td>
-            <td className="border px-4 py-2">5</td>
-            <td className="border px-4 py-2">
-              <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                <MdDeleteOutline size={20} />
-              </button>
-            </td>
-          </tbody>
-          <tbody>
-            <td className="border px-4 py-2">Mohamed Asjedh</td>
-            <td className="border px-4 py-2">m.asjedhcr7@gmail.com</td>
-            <td className="border px-4 py-2">5</td>
-            <td className="border px-4 py-2">
-              <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                <MdDeleteOutline size={20} />
-              </button>
-            </td>
-          </tbody>
+
+          {users.map((user) => (
+            <tbody>
+              <td className="border px-4 py-2">{user.name}</td>
+              <td className="border px-4 py-2">{user.email}</td>
+              <td className="border px-4 py-2">{user.tasks.length}</td>
+              <td className="border px-4 py-2">
+                <button
+                  onClick={() => handleDeleteUser(user.id)}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  <MdDeleteOutline size={20} />
+                </button>
+              </td>
+            </tbody>
+          ))}
         </table>
       </div>
     </div>
