@@ -1,58 +1,92 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { RiCloseCircleLine } from "react-icons/ri";
 
-const AddTask = ({ closeModal }) => {
+const AddTask = ({ onTaskCreate, isAddTaskModalOpen }) => {
   const [task, setTask] = useState("");
   const [status, setStatus] = useState("In complete");
   const [date, setDate] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!task || !date) {
+      setError("Task name and date are required.");
+      return;
+    }
+    const userId = window.localStorage.getItem("userId");
     try {
-      // Your API call to add the task
-      alert("Task added successfully");
-      closeModal(); // Close the modal after successful submission
-    } catch (error) {
-      console.error("Error adding task:", error);
+      await axios.post(
+        `http://localhost:8080/api/v1/taskManager/create/${userId}`,
+        {
+          task,
+          taskStatus: status,
+          taskDate: date,
+        }
+      );
+      onTaskCreate();
+      handleClose();
+      window.location.reload();
+    } catch (err) {
+      console.error("Error creating task:", err);
+      setError("An error occurred while creating the task. Please try again.");
     }
   };
 
+  const handleClose = () => {
+    setTask("");
+    setStatus("In complete");
+    setDate("");
+    setError("");
+    onTaskCreate();
+  };
+
   return (
-    <div className="fixed flex top-0 left-0 items-center justify-center right-0 bottom-0 bg-gray-800 bg-opacity-50">
-      <div className="w-[500px] h-[450px] shadow-md border flex flex-col p-8 z-30 bg-white">
-        <div className="flex justify-between items-center">
-          <h2 className="font-semibold text-xl">Add New Task</h2>
-          <button onClick={closeModal}>Close</button>
-        </div>
-        <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-y-6">
-          <div className="flex flex-col gap-4">
-            <label htmlFor="task">Task</label>
+    <div
+      className={`fixed top-0 left-0 flex items-center justify-center w-full h-full bg-gray-800 bg-opacity-50 z-50 ${
+        isAddTaskModalOpen ? "" : "hidden"
+      }`}
+    >
+      <div className="w-[500px] shadow-md border bg-white rounded-lg p-8 relative">
+        <button className="absolute top-2 right-2" onClick={handleClose}>
+          <RiCloseCircleLine size={24} />
+        </button>
+        <h2 className="font-semibold text-xl mb-6">Add New Task</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="task" className="block mb-2">
+              Task
+            </label>
             <input
               id="task"
               type="text"
-              className="border"
               value={task}
               onChange={(e) => setTask(e.target.value)}
+              className="border px-4 py-2 w-full"
             />
           </div>
-          <div className="flex flex-col gap-4">
-            <label htmlFor="date">Date</label>
+          <div className="mb-4">
+            <label htmlFor="date" className="block mb-2">
+              Date
+            </label>
             <input
               id="date"
               type="date"
-              className="border"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              className="border px-4 py-2 w-full"
             />
           </div>
-          <div className="flex flex-col gap-4">
-            <label htmlFor="status">Status</label>
+          <div className="mb-4">
+            <label htmlFor="status" className="block mb-2">
+              Status
+            </label>
             <select
-              name="status"
               id="status"
-              className="border h-[30px]"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
+              className="border px-4 py-2 w-full"
             >
               <option value="In complete">In complete</option>
               <option value="Complete">Complete</option>
@@ -60,9 +94,9 @@ const AddTask = ({ closeModal }) => {
           </div>
           <button
             type="submit"
-            className="p-2 w-[100px] bg-sky-300 flex justify-center"
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
           >
-            Submit
+            Add Task
           </button>
         </form>
       </div>

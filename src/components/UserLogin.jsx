@@ -3,19 +3,32 @@ import { RiAdminFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const login = async ({ email, password }) => {
+  const data = await axios.post(
+    "http://localhost:8080/api/v1/taskManager/login",
+    {
+      email,
+      password,
+    }
+  );
+  return data;
+};
+
 const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleClick = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!(email && password)) return;
     try {
-      await axios.post("http://localhost:8080/api/v1/taskManager/login", {
-        email,
-        password,
-      });
-      navigate("/user-dashboard");
+      const data = await login({ email, password });
+      if (data.status === 200) {
+        const userId = data.data;
+        window.localStorage.setItem("userId", userId);
+        navigate("/user-dashboard");
+      }
     } catch (error) {
       console.error("Error login:", error);
       alert("Error login. Please try again.");
@@ -55,7 +68,7 @@ const UserLogin = () => {
           <h1 className="flex justify-center items-center text-xl font-signature ">
             Login to your account
           </h1>
-          <form onSubmit={handleClick} className="mt-5 flex flex-col">
+          <form onSubmit={handleSubmit} className="mt-5 flex flex-col">
             <label className="font-semibold" htmlFor="username">
               Email:
             </label>

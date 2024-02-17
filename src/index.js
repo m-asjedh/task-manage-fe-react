@@ -35,10 +35,6 @@ const router = createBrowserRouter([
         path: "/admin-dashboard",
         element: <AdminDash />,
       },
-      {
-        path: "/add-task",
-        element: <AddTask />,
-      },
     ],
   },
 ]);
